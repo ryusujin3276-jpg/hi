@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>곱셈공식 조립형 연습</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --success-color: #48bb78;
+            --error-color: #f56565;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #718096;
+        }
+
+        /* 문제 영역 */
+        .question-box {
+            background: #edf2f7;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 3rem;
+            font-weight: 800;
+        }
+
+        /* 답안 조립 영역 */
+        .answer-section {
+            border: 3px dashed #cbd5e0;
+            min-height: 100px;
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            background: #fff;
+            transition: background 0.3s;
+        }
+
+        .answer-section.drag-over {
+            background: #ebf8ff;
+            border-color: var(--primary-color);
+        }
+
+        /* 선택지 영역 */
+        .choices-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* 카드 공통 스타일 */
+        .card {
+            background: var(--card-bg);
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+
+        .card:active {
+            transform: scale(0.95);
+        }
+
+        /* 결과/메시지 영역 */
+        .message-box {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-height: 40px;
+            margin-bottom: 20px;
+        }
+
+        .message-success { color: var(--success-color); }
+        .message-error { color: var(--error-color); }
+
+        /* 컨트롤 버튼 */
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-submit:hover { background-color: #357abd; }
+
+        .btn-next {
+            background-color: var(--success-color);
+            color: white;
+            display: none;
+        }
+
+        .btn-next:hover { background-color: #38a169; }
+
+        .btn:disabled {
+            background-color: #cbd5e0;
+            cursor: not-allowed;
+        }
+
+        /* 결과 화면 전용 */
+        #final-screen {
+            display: none;
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 5rem;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+
+        /* 반응형 */
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .question-text { font-size: 2rem; }
+            .card { font-size: 1.2rem; padding: 8px 15px; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 전체 카드 컨테이너 -->
+    <div class="card-container" style="display: flex; gap: 24px; max-width: 1200px; width: 100%; justify-content: center; flex-wrap: wrap; margin-top: 50px;">
+        
+        <!-- 첫 번째 카드: 곱셈공식 연습 -->
+        <article class="card" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); width: calc(33.333% - 16px); min-width: 300px; display: flex; flex-direction: column; transition: transform 0.3s ease;">
+            <div class="card-image" style="width: 100%; height: 200px; overflow: hidden;">
+                <img src="https://picsum.photos/id/1/400/300" alt="곱셈공식 연습" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="card-content" style="padding: 24px; flex-grow: 1;">
+                <h3 style="font-size: 1.25rem; color: #1a202c; margin-bottom: 12px;">곱셈공식 조립 연습</h3>
+                <p style="font-size: 1rem; color: #4a5568; line-height: 1.6;">카드를 조립하며 고등 수학의 기초인 곱셈공식을 재미있게 익혀보세요. 드래그 앤 드롭으로 완성하는 학습 도구입니다.</p>
+            </div>
+            <div class="card-footer" style="padding: 24px; padding-top: 0; display: flex; justify-content: center;">
+                <a href="activity.html" class="btn-link" style="text-decoration: none; background-color: #4a90e2; color: white; padding: 12px 32px; border-radius: 8px; font-weight: 600; transition: background-color 0.2s ease;">학습 시작하기</a>
+            </div>
+        </article>
+
+        <!-- 두 번째 카드: 개념 정리 -->
+        <article class="card" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); width: calc(33.333% - 16px); min-width: 300px; display: flex; flex-direction: column; transition: transform 0.3s ease;">
+            <div class="card-image" style="width: 100%; height: 200px; overflow: hidden;">
+                <img src="https://picsum.photos/id/2/400/300" alt="개념 정리" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="card-content" style="padding: 24px; flex-grow: 1;">
+                <h3 style="font-size: 1.25rem; color: #1a202c; margin-bottom: 12px;">공식 개념 정리</h3>
+                <p style="font-size: 1rem; color: #4a5568; line-height: 1.6;">주요 곱셈공식의 원리와 유도 과정을 한눈에 확인하세요. 문제 풀이 전 핵심 개념을 다지는 시간입니다.</p>
+            </div>
+            <div class="card-footer" style="padding: 24px; padding-top: 0; display: flex; justify-content: center;">
+                <a href="#" class="btn-link" style="text-decoration: none; background-color: #4a90e2; color: white; padding: 12px 32px; border-radius: 8px; font-weight: 600; transition: background-color 0.2s ease;">개념 보기</a>
+            </div>
+        </article>
+
+        <!-- 세 번째 카드: 오답 노트 -->
+        <article class="card" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); width: calc(33.333% - 16px); min-width: 300px; display: flex; flex-direction: column; transition: transform 0.3s ease;">
+            <div class="card-image" style="width: 100%; height: 200px; overflow: hidden;">
+                <img src="https://picsum.photos/id/3/400/300" alt="오답 노트" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="card-content" style="padding: 24px; flex-grow: 1;">
+                <h3 style="font-size: 1.25rem; color: #1a202c; margin-bottom: 12px;">나의 학습 기록</h3>
+                <p style="font-size: 1rem; color: #4a5568; line-height: 1.6;">자주 틀리는 문제와 학습 진행 상황을 체크하세요. 부족한 부분을 집중적으로 보완할 수 있습니다.</p>
+            </div>
+            <div class="card-footer" style="padding: 24px; padding-top: 0; display: flex; justify-content: center;">
+                <a href="#" class="btn-link" style="text-decoration: none; background-color: #4a90e2; color: white; padding: 12px 32px; border-radius: 8px; font-weight: 600; transition: background-color 0.2s ease;">기록 확인</a>
+            </div>
+        </article>
+
+    </div>
+
+<script>
+    /**
+     * 문제 은행 (questionBank)
+     * q: 문제 식
+     * correct: 정답 카드 배열 (순서 중요)
+     * choices: 오답을 포함한 전체 카드 목록 (랜덤하게 섞여서 표시됨)
+     * hint: 오답 시 보여줄 힌트
+     */
+    const questionBank = [
+        {
+            q: "(a + b)²",
+            correct: ["a²", "+", "2ab", "+", "b²"],
+            choices: ["a²", "+", "2ab", "+", "b²", "2a", "2b", "ab", "a", "b"],
+            hint: "(a + b)² = a² + 2ab + b² 공식을 기억해봐!"
+        },
+        {
+            q: "(a - b)²",
+            correct: ["a²", "-", "2ab", "+", "b²"],
+            choices: ["a²", "-", "2ab", "+", "b²", "a²", "b²", "-2ab", "-b²", "2ab"],
+            hint: "중간항의 부호가 마이너스(-)인 것에 주의해!"
+        },
+        {
+            q: "(a + b)(a - b)",
+            correct: ["a²", "-", "b²"],
+            choices: ["a²", "-", "b²", "a²", "+", "b²", "2ab", "-2ab", "a", "b"],
+            hint: "합차 공식은 제곱의 차(a² - b²)가 된단다."
+        },
+        {
+            q: "(x + 3)(x + 5)",
+            correct: ["x²", "+", "8x", "+", "15"],
+            choices: ["x²", "+", "8x", "+", "15", "x²", "15", "8x", "+", "2x", "15x", "8"],
+            hint: "상수항의 합(3+5)이 x의 계수, 곱(3*5)이 상수항이야."
+        },
+        {
+            q: "(2x + 3)²",
+            correct: ["4x²", "+", "12x", "+", "9"],
+            choices: ["4x²", "+", "12x", "+", "9", "2x²", "6x", "12", "9x", "x²"],
+            hint: "(2x)²은 4x²이고, 중간항은 2 * 2x * 3 이란다."
+        },
+        {
+            q: "(x - 4)(x + 5)",
+            correct: ["x²", "+", "x", "-", "20"],
+            choices: ["x²", "+", "x", "-", "20", "x²", "-x", "-20", "20", "+20", "9x"],
+            hint: "-4와 +5의 합과 곱을 잘 계산해봐."
+        },
+        {
+            q: "(3a - b)²",
+            correct: ["9a²", "-", "6ab", "+", "b²"],
+            choices: ["9a²", "-", "6ab", "+", "b²", "3a²", "-3ab", "6ab", "b²", "6a²"],
+            hint: "(3a)² = 9a²이고, 중간항은 2 * 3a * (-b)야."
+        },
+        {
+            q: "(2x + 1)(2x - 1)",
+            correct: ["4x²", "-", "1"],
+            choices: ["4x²", "-", "1", "2x²", "+1", "-1", "4x", "2x", "+", "-"],
+            hint: "(A+B)(A-B) = A² - B² 꼴을 적용해봐."
+        },
+        {
+            q: "(x - 7)(x + 3)",
+            correct: ["x²", "-", "4x", "-", "21"],
+            choices: ["x²", "-", "4x", "-", "21", "-10x", "+4x", "+21", "-21", "x²"],
+            hint: "합은 (-7+3), 곱은 (-7*3)이야."
+        },
+        {
+            q: "(5x + 2)²",
+            correct: ["25x²", "+", "20x", "+", "4"],
+            choices: ["25x²", "+", "20x", "+", "4", "10x²", "20x", "10x", "4", "25x"],
+            hint: "(5x)²=25x², 2*5x*2=20x, 2²=4 임을 확인해."
+        }
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let draggedElement = null;
+
+    // 게임 시작 시 초기화
+    function init() {
+        document.getElementById('total-idx').innerText = questionBank.length;
+        loadQuestion();
+    }
+
+    // 문제 불러오기
+    function loadQuestion() {
+        const question = questionBank[currentIdx];
+        document.getElementById('current-idx').innerText = currentIdx + 1;
+        document.getElementById('question-display').innerText = question.q;
+        document.getElementById('message').innerText = "카드를 조립하여 전개식을 완성하세요!";
+        document.getElementById('message').className = "message-box";
+        document.getElementById('answer-zone').innerHTML = "";
+        document.getElementById('btn-next').style.display = "none";
+        document.getElementById('btn-submit').style.display = "inline-block";
+
+        // 선택지 섞기
+        const shuffledChoices = [...question.choices].sort(() => Math.random() - 0.5);
+        
+        const choiceZone = document.getElementById('choice-zone');
+        choiceZone.innerHTML = "";
+        shuffledChoices.forEach((text, index) => {
+            const card = createCard(text, index);
+            choiceZone.appendChild(card);
+        });
+    }
+
+    // 카드 요소 생성
+    function createCard(text, index) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerText = text;
+        card.draggable = true;
+        
+        // 클릭 시 답안 영역으로 이동/제거
+        card.onclick = function() {
+            if (this.parentElement.id === 'choice-zone') {
+                moveToAnswer(this);
+            } else {
+                removeFromAnswer(this);
+            }
+        };
+
+        // 드래그 시작 이벤트
+        card.ondragstart = function(e) {
+            draggedElement = this;
+            e.dataTransfer.setData('text/plain', text);
+            setTimeout(() => this.style.opacity = '0.5', 0);
+        };
+
+        card.ondragend = function() {
+            this.style.opacity = '1';
+        };
+
+        return card;
+    }
+
+    // 답안 영역으로 카드 이동 (클릭/드롭 공용)
+    function moveToAnswer(card) {
+        // 선택지에서 복사하는 것이 아니라 이동 느낌을 주기 위해 새로 생성하거나 이동
+        // 여기서는 답안 영역의 카드는 클릭 시 삭제되도록 설정
+        const newCard = createCard(card.innerText);
+        document.getElementById('answer-zone').appendChild(newCard);
+    }
+
+    // 답안 영역에서 카드 제거
+    function removeFromAnswer(card) {
+        card.remove();
+    }
+
+    /* 드래그 앤 드롭 로직 */
+    function allowDrop(e) {
+        e.preventDefault();
+        document.getElementById('answer-zone').classList.add('drag-over');
+    }
+
+    function dragLeave(e) {
+        document.getElementById('answer-zone').classList.remove('drag-over');
+    }
+
+    function drop(e) {
+        e.preventDefault();
+        document.getElementById('answer-zone').classList.remove('drag-over');
+        
+        if (draggedElement) {
+            // 선택지에서 온 카드만 답안지에 추가
+            if (draggedElement.parentElement.id === 'choice-zone') {
+                moveToAnswer(draggedElement);
+            }
+        }
+    }
+
+    // 정답 확인
+    function checkAnswer() {
+        const answerCards = document.getElementById('answer-zone').querySelectorAll('.card');
+        const userAnswer = Array.from(answerCards).map(c => c.innerText);
+        const correctAnswer = questionBank[currentIdx].correct;
+
+        const messageBox = document.getElementById('message');
+
+        if (userAnswer.length === 0) {
+            messageBox.innerText = "답안을 작성해주세요!";
+            messageBox.className = "message-box message-error";
+            return;
+        }
+
+        // 배열 내용 및 순서 비교
+        const isCorrect = JSON.stringify(userAnswer) === JSON.stringify(correctAnswer);
+
+        if (isCorrect) {
+            score++;
+            document.getElementById('score-count').innerText = score;
+            messageBox.innerText = "정답입니다! 훌륭해요! ✨";
+            messageBox.className = "message-box message-success";
+            document.getElementById('btn-submit').style.display = "none";
+            document.getElementById('btn-next').style.display = "inline-block";
+        } else {
+            messageBox.innerText = "오답입니다. 힌트: " + questionBank[currentIdx].hint;
+            messageBox.className = "message-box message-error";
+        }
+    }
+
+    // 다음 문제로 이동
+    function nextQuestion() {
+        currentIdx++;
+        if (currentIdx < questionBank.length) {
+            loadQuestion();
+        } else {
+            showFinalResult();
+        }
+    }
+
+    // 결과 화면 표시
+    function showFinalResult() {
+        document.getElementById('game-screen').style.display = "none";
+        document.getElementById('final-screen').style.display = "block";
+        document.getElementById('final-score').innerText = score;
+    }
+
+    // 실행
+    init();
+</script>
+
+</body>
+</html>
